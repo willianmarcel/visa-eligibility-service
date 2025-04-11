@@ -1,0 +1,34 @@
+fastapi>=0.95.0
+uvicorn>=0.22.0
+sqlalchemy>=2.0.0
+alembic>=1.10.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+psycopg2-binary>=2.9.6
+redis>=4.5.0
+python-dotenv>=1.0.0
+python-jose[cryptography]>=3.3.0
+passlib>=1.7.0
+pytest>=7.0.0
+pytest-cov>=4.1.0
+httpx>=0.24.0
+pytest-asyncio>=0.21.0
+faker>=18.0.0
+pytz>=2023.0
+tenacity>=8.2.0
+gunicorn>=20.1.0
+
+# Logging e métricas
+loguru>=0.7.0
+opentelemetry-api>=1.15.0
+opentelemetry-sdk>=1.15.0
+opencensus-ext-azure>=1.1.9  # Para integração com Azure Monitor
+
+# Para cache
+aioredis>=2.0.0
+
+# SQLite para desenvolvimento e testes (só se necessário)
+# Já vem com Python, não precisa instalar
+
+# Rate limiting
+slowapi>=0.1.6 
