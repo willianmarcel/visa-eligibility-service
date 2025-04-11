@@ -1,0 +1,161 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Ambientes virtuais
+venv/
+env/
+ENV/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# Distribuição / empacotamento
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testes unitários / cobertura
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+pytestdebug.log
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDEs e editores
+# VSCode
+.vscode/
+.history/
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+*.iws
+.idea_modules/
+
+# SublimeText
+*.sublime-project
+*.sublime-workspace
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Banco de dados
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+*.dump
+
+# Arquivos específicos da aplicação
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.local.py
+
+# Arquivos de certificado e chaves
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+*.p7b
+*.p7r
+*.spc
+*.csr
+
+# Caches de dependências
+.pip-cache/
+pip-selfcheck.json
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Templates gerados
+*.html.py
+
+# Sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Arquivos temporários
+*.swp
+*.bak
+*.tmp
+*~
+
+# Arquivos grandes
+*.csv
+*.parquet
+*.xlsx
+*.xls
+!example_data/*.csv
+
+# Arquivos que possam conter senhas
+*password*
+*credential*
+*secret*
+!*template* 
