@@ -94,47 +94,7 @@ class EligibilityAssessmentInput(BaseModel):
     
     class Config:
         json_schema_extra = {
-            "example": {
-                "user_id": "user123",
-                "education": {
-                    "highest_degree": "PHD",
-                    "field_of_study": "Computer Science",
-                    "university_ranking": 50,
-                    "years_since_graduation": 5,
-                    "professional_license": False,
-                    "certifications": [
-                        {"name": "AWS Solutions Architect", "issuer": "Amazon", "year": 2020, "still_valid": True}
-                    ]
-                },
-                "experience": {
-                    "years_of_experience": 8,
-                    "leadership_roles": True,
-                    "specialized_experience": True,
-                    "current_position": "Senior Researcher",
-                    "past_positions": ["Assistant Professor", "Research Associate"],
-                    "salary_level": "ABOVE_AVERAGE"
-                },
-                "achievements": {
-                    "publications_count": 15,
-                    "patents_count": 2,
-                    "projects_led": 5,
-                    "citations_count": 250,
-                    "h_index": 8
-                },
-                "recognition": {
-                    "awards_count": 3,
-                    "speaking_invitations": 10,
-                    "professional_memberships": 2,
-                    "recommendation_letters": 3
-                },
-                "us_plans": {
-                    "proposed_work": "Advanced research in machine learning algorithms for healthcare",
-                    "field_of_work": "Artificial Intelligence in Healthcare",
-                    "national_importance": "Improve healthcare outcomes and reduce costs",
-                    "potential_beneficiaries": "Hospitals, patients, healthcare providers",
-                    "standard_process_impracticality": "Specialized expertise not readily available in US workforce"
-                }
-            }
+            "example": {}
         }
 
 # Esquemas de saída
@@ -213,63 +173,7 @@ class EligibilityAssessmentOutput(BaseModel):
     
     class Config:
         json_schema_extra = {
-            "example": {
-                "id": "a1b2c3d4-e5f6-7890-abcd-1234567890ab",
-                "user_id": "user123",
-                "created_at": "2023-05-20T14:30:15.123Z",
-                "score": {
-                    "education": 0.85,
-                    "experience": 0.75,
-                    "achievements": 0.70,
-                    "recognition": 0.65,
-                    "overall": 0.75
-                },
-                "eb2_route": {
-                    "recommended_route": "ADVANCED_DEGREE",
-                    "advanced_degree_score": 0.85,
-                    "exceptional_ability_score": 0.65,
-                    "route_explanation": "Seu doutorado em ciência da computação proporciona uma base forte para a rota de Grau Avançado"
-                },
-                "niw_evaluation": {
-                    "merit_importance_score": 0.80,
-                    "well_positioned_score": 0.65,
-                    "benefit_waiver_score": 0.55,
-                    "niw_overall_score": 0.68
-                },
-                "viability_level": "STRONG",
-                "viability": "Good",
-                "probability": 0.72,
-                "strengths": [
-                    "PhD de universidade bem classificada",
-                    "Forte experiência em pesquisa",
-                    "Publicações em conferências reconhecidas"
-                ],
-                "weaknesses": [
-                    "Número limitado de citações",
-                    "Poucos prêmios de reconhecimento",
-                    "Experiência concentrada em apenas uma área"
-                ],
-                "recommendations": [
-                    "Obter mais cartas de recomendação de especialistas reconhecidos",
-                    "Aumentar citações através de colaborações",
-                    "Documentar impacto específico do seu trabalho"
-                ],
-                "detailed_recommendations": [
-                    {
-                        "category": "recognition",
-                        "description": "Obter mais cartas de recomendação de especialistas reconhecidos na área",
-                        "impact": "HIGH",
-                        "priority": 1,
-                        "improves_route": "BOTH"
-                    }
-                ],
-                "next_steps": [
-                    "Complete seu perfil com mais detalhes sobre publicações",
-                    "Upload de documentos comprobatórios de prêmios"
-                ],
-                "message": "Seu perfil é promissor, com forte base educacional que o posiciona bem para o EB2-NIW",
-                "estimated_processing_time": 8
-            }
+            "example": {}
         }
 
 # Manter classes de compatibilidade com a implementação anterior    
@@ -288,18 +192,7 @@ class AssessmentCreate(BaseModel):
     
     class Config:
         json_schema_extra = {
-            "example": {
-                "user_id": "user123",
-                "education_level": "PhD",
-                "field_of_study": "Computer Science",
-                "years_of_experience": 5,
-                "publications_count": 7,
-                "citations_count": 120,
-                "awards_count": 2,
-                "recommendation_letters": 3,
-                "annual_salary": 95000,
-                "current_position": "Senior Researcher"
-            }
+            "example": {}
         }
 
 class AssessmentResponse(BaseModel):
@@ -318,28 +211,7 @@ class AssessmentResponse(BaseModel):
     
     class Config:
         json_schema_extra = {
-            "example": {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "overall_score": 0.78,
-                "viability_level": "Promising",
-                "education_score": 0.9,
-                "experience_score": 0.7,
-                "achievements_score": 0.6,
-                "recognition_score": 0.8,
-                "strengths": [
-                    "Forte formação acadêmica",
-                    "Experiência relevante na área"
-                ],
-                "weaknesses": [
-                    "Poucas publicações em journals de alto impacto",
-                    "Número limitado de citações"
-                ],
-                "recommendations": [
-                    "Publicar mais artigos em journals de alto impacto",
-                    "Obter mais cartas de recomendação de especialistas reconhecidos"
-                ],
-                "created_at": "2023-01-15T13:45:30Z"
-            }
+            "example": {}
         }
     
     class Config:

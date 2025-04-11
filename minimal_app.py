@@ -11,6 +11,7 @@ from datetime import datetime
 import uuid
 import json
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uvicorn
@@ -25,6 +26,18 @@ app = FastAPI(
     description="Versão mínima da API para avaliação de elegibilidade",
     version="0.1.0"
 )
+
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permitir todas as origens em desenvolvimento
+    allow_credentials=False,  # Importante para evitar problemas com cookies
+    allow_methods=["*"],  # Permitir todos os métodos
+    allow_headers=["*"],  # Permitir todos os cabeçalhos
+)
+
+# Adicionar prefixos às rotas para corresponder às expectativas do frontend
+prefix = "/api/v1/eligibility"
 
 # Inicializar banco SQLite em memória
 conn = sqlite3.connect(':memory:')
@@ -80,34 +93,48 @@ class AssessmentResponse(BaseModel):
     recommendations: List[str]
     created_at: str
 
-@app.get("/")
+@app.get(f"{prefix}/")
 async def root():
     return {"message": "Eligibility Assessment API (Minimal Version)"}
 
-@app.get("/health")
+@app.get(f"{prefix}/health")
 async def health_check():
     return {"status": "healthy", "database": "SQLite (in-memory)"}
 
-@app.post("/assess", response_model=AssessmentResponse)
+@app.post(f"{prefix}/assess", response_model=AssessmentResponse)
 async def create_assessment(assessment: AssessmentCreate):
     """Cria uma avaliação rápida de elegibilidade."""
     
-    # Gerar valores simulados para teste
+    # Gerar ID e timestamp
     assessment_id = str(uuid.uuid4())
     created_at = datetime.utcnow().isoformat()
     
-    # Scores simulados
-    overall_score = 0.75
-    viability_level = "Promising" 
-    education_score = 0.8
-    experience_score = 0.7
-    achievements_score = 0.6
-    recognition_score = 0.9
+    # AVISO: Esta é uma versão mínima para testes
+    # Em produção, estes valores seriam calculados através de um algoritmo real
+    # Usando apenas valores padrão para fins de desenvolvimento
+    overall_score = 0.5
+    viability_level = "TEST_MODE" 
+    education_score = 0.5
+    experience_score = 0.5
+    achievements_score = 0.5
+    recognition_score = 0.5
     
-    # Dados de exemplo
-    strengths = ["Strong educational background", "Impressive work experience"]
-    weaknesses = ["Limited publications", "Few citations"] 
-    recommendations = ["Consider publishing more research", "Obtain additional letters of recommendation"]
+    # Mensagens genéricas
+    strengths = ["Esta é uma versão mínima para testes. Os dados não são representativos."]
+    weaknesses = ["Esta é uma versão mínima para testes. Os dados não são representativos."] 
+    recommendations = ["Esta é uma versão mínima para testes. Os dados não são representativos."]
+    
+    # Processamento básico dos dados de entrada para mostrar alguma variação
+    if assessment.education_level == "PHD":
+        education_score = 0.8
+        overall_score += 0.1
+    
+    if assessment.years_of_experience > 5:
+        experience_score = 0.7
+        overall_score += 0.05
+    
+    # Normalizar o score final
+    overall_score = min(1.0, overall_score)
     
     # Salvar no banco
     cursor.execute(
@@ -145,7 +172,7 @@ async def create_assessment(assessment: AssessmentCreate):
         created_at=created_at
     )
 
-@app.get("/assessments/{user_id}", response_model=List[AssessmentResponse])
+@app.get(f"{prefix}/history/{{user_id}}", response_model=List[AssessmentResponse])
 async def get_user_assessments(user_id: str):
     """Obtém todas as avaliações de um usuário."""
     
@@ -179,4 +206,4 @@ async def get_user_assessments(user_id: str):
 
 if __name__ == "__main__":
     logger.info("Iniciando versão mínima da API de elegibilidade...")
-    uvicorn.run(app, host="0.0.0.0", port=8001) 
+    uvicorn.run(app, host="0.0.0.0", port=8080) 

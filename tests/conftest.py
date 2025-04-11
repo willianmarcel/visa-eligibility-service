@@ -80,9 +80,14 @@ def mock_auth(monkeypatch):
     monkeypatch.setattr("app.api.deps.get_current_user", mock_get_current_user)
     return user_id
 
-# Dados de exemplo para testes
+# ===================================================================
+# IMPORTANTE: Os dados abaixo são EXCLUSIVAMENTE para uso em testes 
+# e não devem ser usados em produção ou como referência para casos reais
+# ===================================================================
+
 @pytest.fixture
 def sample_education_data():
+    """Dados fictícios para testes automatizados."""
     return {
         "highest_degree": "PHD",
         "field_of_study": "Computer Science",
@@ -92,6 +97,7 @@ def sample_education_data():
 
 @pytest.fixture
 def sample_experience_data():
+    """Dados fictícios para testes automatizados."""
     return {
         "years_of_experience": 8,
         "leadership_roles": True,
@@ -101,6 +107,7 @@ def sample_experience_data():
 
 @pytest.fixture
 def sample_achievements_data():
+    """Dados fictícios para testes automatizados."""
     return {
         "publications_count": 7,
         "patents_count": 2,
@@ -110,6 +117,7 @@ def sample_achievements_data():
 
 @pytest.fixture
 def sample_recognition_data():
+    """Dados fictícios para testes automatizados."""
     return {
         "awards_count": 2,
         "speaking_invitations": 4,
@@ -118,6 +126,7 @@ def sample_recognition_data():
 
 @pytest.fixture
 def sample_us_plans_data():
+    """Dados fictícios para testes automatizados."""
     return {
         "proposed_work": "Advanced research in machine learning algorithms for healthcare",
         "field_of_work": "Artificial Intelligence in Healthcare",

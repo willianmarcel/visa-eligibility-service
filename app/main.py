@@ -30,17 +30,17 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configurar CORS - Em desenvolvimento permitimos todas as origens
-origins = ["*"] if os.environ.get("ENVIRONMENT") == "dev" else [
-    "http://localhost",
+origins = [
+    "http://localhost:3001",  # Frontend Next.js
     "http://localhost:3000",  # Frontend Next.js
-    "http://localhost:3001",  # Frontend Next.js (alternativo)
+    "http://localhost:8080",  # API
     "https://visa-platform.example.com",  # Production domain
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=False if os.environ.get("ENVIRONMENT") == "dev" else True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

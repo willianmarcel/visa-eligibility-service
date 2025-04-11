@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Header
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
@@ -10,10 +10,12 @@ from app.schemas.eligibility import (
     EligibilityScore
 )
 from app.models.eligibility import QuickAssessment
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import logging
 from datetime import datetime
 import json
+import jwt
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -25,6 +27,7 @@ limiter = Limiter(key_func=get_remote_address)
 async def assess_eligibility(
     request: Request,
     assessment_input: EligibilityAssessmentInput,
+    authorization: Optional[str] = Header(None),
     db: Session = Depends(get_db)
 ):
     """
@@ -36,10 +39,42 @@ async def assess_eligibility(
     A resposta inclui pontuações detalhadas, pontos fortes, fracos e recomendações específicas.
     """
     try:
-        logger.info(f"Recebida solicitação de avaliação para usuário: {assessment_input.user_id or 'anônimo'}")
+        # Tentar extrair o user_id do token de autorização
+        if not assessment_input.user_id and authorization:
+            try:
+                # Verificar se está no modo de desenvolvimento
+                is_dev_mode = settings.ENVIRONMENT.lower() == "dev"
+                
+                # Extrair o token do cabeçalho Authorization
+                token = authorization.replace("Bearer ", "")
+                
+                # Decodificar o token e extrair o user_id
+                decoded_token = jwt.decode(
+                    token, 
+                    settings.SECRET_KEY,
+                    algorithms=["HS256"]
+                )
+                authenticated_user_id = decoded_token.get("sub")
+                
+                if authenticated_user_id:
+                    logger.info(f"Usando ID de usuário do token: {authenticated_user_id}")
+                    assessment_input.user_id = authenticated_user_id
+            except jwt.PyJWTError as e:
+                logger.warning(f"Não foi possível decodificar o token: {e}")
+                # Não interrompe o fluxo se falhar ao decodificar o token
+        
+        # Se ainda não tiver um user_id, usar um ID anônimo temporário
+        if not assessment_input.user_id:
+            # Gerar um ID temporário para este usuário anônimo
+            import uuid
+            temp_user_id = f"anon_{uuid.uuid4()}"
+            logger.info(f"Criando ID temporário para usuário anônimo: {temp_user_id}")
+            assessment_input.user_id = temp_user_id
+        
+        logger.info(f"Recebida solicitação de avaliação para usuário: {assessment_input.user_id}")
         
         # Chamar o serviço para realizar a avaliação
-        assessment_result = eligibility_service.assess_eligibility(assessment_input)
+        assessment_result = await eligibility_service.assess_eligibility(assessment_input)
         
         # Salvar a avaliação no banco de dados
         if assessment_input.user_id:
@@ -91,15 +126,60 @@ async def assess_eligibility(
 async def get_user_assessment_history(
     request: Request,
     user_id: str,
+    authorization: Optional[str] = Header(None),
     db: Session = Depends(get_db)
 ):
     """
     Busca o histórico de avaliações de elegibilidade de um usuário.
     
     Retorna uma lista de avaliações anteriores realizadas pelo usuário, ordenadas da mais recente para a mais antiga.
+    A autenticação é obrigatória e o usuário só pode acessar seu próprio histórico.
     """
     try:
         logger.info(f"Buscando histórico de avaliações para usuário: {user_id}")
+        
+        # Verificar autenticação e autorização
+        authenticated_user_id = None
+        
+        # Verificar se está no modo de desenvolvimento
+        is_dev_mode = settings.ENVIRONMENT.lower() == "dev"
+        logger.info(f"Modo de ambiente: {'desenvolvimento' if is_dev_mode else 'produção'}")
+        
+        # Se não estiver em modo de desenvolvimento, verificar a autenticação
+        if not is_dev_mode:
+            if not authorization:
+                logger.error("Tentativa de acesso sem token de autenticação")
+                raise HTTPException(status_code=401, detail="Autenticação obrigatória")
+            
+            try:
+                # Extrair o token do cabeçalho Authorization
+                token = authorization.replace("Bearer ", "")
+                
+                # Decodificar o token e extrair o user_id
+                decoded_token = jwt.decode(
+                    token, 
+                    settings.SECRET_KEY,
+                    algorithms=["HS256"]
+                )
+                authenticated_user_id = decoded_token.get("sub")
+                
+                # Verificar se o usuário está tentando acessar seu próprio histórico
+                if authenticated_user_id != user_id:
+                    logger.error(f"Usuário {authenticated_user_id} tentando acessar histórico de {user_id}")
+                    raise HTTPException(
+                        status_code=403, 
+                        detail="Acesso negado: Você só pode acessar seu próprio histórico"
+                    )
+            except jwt.PyJWTError as e:
+                logger.error(f"Erro ao decodificar token: {e}")
+                raise HTTPException(status_code=401, detail="Token inválido ou expirado")
+        else:
+            logger.warning(f"Operando em modo de desenvolvimento - verificações de segurança reduzidas")
+            # Em modo de desenvolvimento, verificamos apenas se o token está presente, sem validá-lo
+            if authorization:
+                logger.info("Token de autorização fornecido em modo de desenvolvimento")
+            else:
+                logger.warning("Sem token de autorização em modo de desenvolvimento")
         
         if not db:
             logger.error("Conexão com banco de dados não disponível")
@@ -109,6 +189,8 @@ async def get_user_assessment_history(
         assessments = db.query(QuickAssessment).filter(
             QuickAssessment.user_id == user_id
         ).order_by(QuickAssessment.created_at.desc()).all()
+        
+        logger.info(f"Encontradas {len(assessments)} avaliações para o usuário {user_id}")
         
         if not assessments:
             logger.info(f"Nenhuma avaliação encontrada para o usuário {user_id}")
