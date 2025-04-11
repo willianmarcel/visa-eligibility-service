@@ -1,9 +1,10 @@
-# Python
+# Arquivos Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -19,119 +20,57 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # Ambientes virtuais
 venv/
-env/
+.venv/
 ENV/
-.env
-.venv
-env.bak/
-venv.bak/
-
-# Distribuição / empacotamento
-.Python
 env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
+virtualenv/
 
-# Testes unitários / cobertura
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-pytestdebug.log
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IDEs e editores
-# VSCode
-.vscode/
-.history/
-
-# PyCharm
-.idea/
-*.iml
-*.iws
-*.ipr
-*.iws
-.idea_modules/
-
-# SublimeText
-*.sublime-project
-*.sublime-workspace
-
-# Eclipse
-.classpath
-.project
-.settings/
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Arquivos de ambiente e configuração
+.env
+.env.*
+!.env.example
+.flaskenv
+instance/
+.webassets-cache
 
 # Banco de dados
 *.sqlite
 *.sqlite3
 *.db
-*.sql
-*.dump
 
-# Arquivos específicos da aplicação
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-config.local.py
+# Logs e relatórios
+logs/
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+coverage.xml
+*.cover
+.hypothesis/
+.coverage.*
+nosetests.xml
+coverage/
 
-# Arquivos de certificado e chaves
-*.pem
-*.key
-*.crt
-*.cer
-*.der
-*.p12
-*.pfx
-*.p7b
-*.p7r
-*.spc
-*.csr
+# Arquivos de IDE e editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.vs/
+.spyderproject
+.spyproject
+.ropeproject
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
 
-# Caches de dependências
-.pip-cache/
-pip-selfcheck.json
-
-# Docker
-.dockerignore
-docker-compose.override.yml
-
-# Templates gerados
-*.html.py
-
-# Sistema operacional
+# Arquivos do sistema operacional
 .DS_Store
 .DS_Store?
 ._*
@@ -139,23 +78,47 @@ docker-compose.override.yml
 .Trashes
 ehthumbs.db
 Thumbs.db
-desktop.ini
-
-# Arquivos temporários
-*.swp
+Icon?
 *.bak
-*.tmp
-*~
 
-# Arquivos grandes
-*.csv
-*.parquet
-*.xlsx
-*.xls
-!example_data/*.csv
+# Arquivos e diretórios Docker
+.dockerignore
+docker-compose.override.yml
 
-# Arquivos que possam conter senhas
+# Arquivos de documentação gerada
+docs/_build/
+site/
+
+# Dados e caches
+data/
+!data/.gitkeep
+tmp/
+temp/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# Arquivos sensíveis que possam ter sido criados durante o desenvolvimento
 *password*
 *credential*
 *secret*
-!*template* 
+*.pem
+*.key
+*.cert
+!*example*
+!*template*
+
+# Arquivos grandes
+*.csv
+*.xls
+*.xlsx
+*.parquet
+*.pkl
+!examples/*.csv
+
+# Artefatos de teste e depuração
+.ipynb_checkpoints/
+debug.py
+test_*.py
+!tests/test_*.py 
