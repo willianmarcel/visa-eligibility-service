@@ -39,7 +39,7 @@ class NIWEvaluator:
             benefit_waiver_score
         )
         
-        # Montar resultado completo
+        # Montar resultado completo compatível com o scoring_engine
         return {
             "merit_importance": merit_importance_result,
             "well_positioned": well_positioned_result,
@@ -47,7 +47,13 @@ class NIWEvaluator:
             "merit_importance_score": merit_importance_score,
             "well_positioned_score": well_positioned_score,
             "benefit_waiver_score": benefit_waiver_score,
-            "niw_score": niw_score
+            "niw_score": niw_score,
+            # Expondo subcritérios no nível superior para compatibilidade
+            "subcriteria": {
+                "merit_importance_score": merit_importance_score,
+                "well_positioned_score": well_positioned_score,
+                "benefit_waiver_score": benefit_waiver_score
+            }
         }
 
     def evaluate_merit_and_national_importance(self, input_data: EligibilityAssessmentInput) -> Dict:

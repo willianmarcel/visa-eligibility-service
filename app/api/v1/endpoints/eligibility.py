@@ -364,7 +364,7 @@ async def get_assessment_by_id(
                         merit_importance_score=niw_data.get("merit_importance_score", 0.0),
                         well_positioned_score=niw_data.get("well_positioned_score", 0.0),
                         benefit_waiver_score=niw_data.get("benefit_waiver_score", 0.0),
-                        niw_overall_score=niw_data.get("niw_overall_score", 0.0)
+                        niw_score=niw_data.get("niw_score", 0.0)
                     )
                 except Exception as e:
                     logger.warning(f"Erro ao processar dados NIW: {e}")

@@ -549,11 +549,11 @@ class ScoringEngine:
         niw_evaluator = NIWEvaluator()
         
         # Avaliação completa do NIW com os três critérios
-        niw_evaluation = niw_evaluator.evaluate_niw(input_data)
+        niw_evaluation = niw_evaluator.evaluate(input_data)
         
         # Calcular score final baseado nas avaliações EB2 e NIW
         eb2_score = advanced_degree_score if eb2_route_eval["recommended_route"] == "ADVANCED_DEGREE" else exceptional_ability_score
-        niw_score = niw_evaluation["niw_overall_score"]
+        niw_score = niw_evaluation["niw_score"]
         
         final_score = self.calculate_final_score(eb2_score, niw_score)
         
@@ -626,10 +626,10 @@ class ScoringEngine:
             
             # Avaliação NIW
             "niw_evaluation": {
-                "merit_importance_score": niw_evaluation["subcriteria"]["merit_importance_score"],
-                "well_positioned_score": niw_evaluation["subcriteria"]["well_positioned_score"],
-                "benefit_waiver_score": niw_evaluation["subcriteria"]["benefit_waiver_score"],
-                "niw_overall_score": niw_evaluation["niw_overall_score"]
+                "merit_importance_score": niw_evaluation["merit_importance_score"],
+                "well_positioned_score": niw_evaluation["well_positioned_score"],
+                "benefit_waiver_score": niw_evaluation["benefit_waiver_score"],
+                "niw_score": niw_evaluation["niw_score"]
             },
             
             # Classificação

@@ -114,7 +114,7 @@ class NIWEvaluation(BaseModel):
     merit_importance_score: float = Field(..., description="Pontuação para mérito e importância nacional (0-1)")
     well_positioned_score: float = Field(..., description="Pontuação para estar bem posicionado (0-1)")
     benefit_waiver_score: float = Field(..., description="Pontuação para benefício da dispensa (0-1)")
-    niw_overall_score: float = Field(..., description="Pontuação geral NIW (0-1)")
+    niw_score: float = Field(..., description="Pontuação geral NIW (0-1)")
 
 class RecommendationDetail(BaseModel):
     category: str = Field(..., description="Categoria da recomendação")

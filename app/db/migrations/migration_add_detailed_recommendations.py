@@ -46,7 +46,7 @@ def up():
                         "merit_importance_score": 0.0,
                         "well_positioned_score": 0.0,
                         "benefit_waiver_score": 0.0,
-                        "niw_overall_score": 0.0
+                        "niw_score": 0.0
                     }
                     
                     # Adicionar recomendações detalhadas
