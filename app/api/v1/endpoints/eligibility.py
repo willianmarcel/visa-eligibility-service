@@ -297,4 +297,123 @@ async def get_eligibility_config():
         "eb2_config": EB2_CONFIG,
         "niw_config": NIW_CONFIG,
         "max_recommendations": MAX_RECOMMENDATIONS
-    } 
+    }
+
+@router.get("/assessment/{assessment_id}", response_model=EligibilityAssessmentOutput)
+@limiter.limit("20/minute")
+async def get_assessment_by_id(
+    request: Request,
+    assessment_id: str,
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+):
+    """
+    Busca uma avaliação específica pelo seu ID.
+    
+    Retorna os detalhes de uma avaliação específica se ela existir.
+    """
+    try:
+        logger.info(f"Buscando avaliação com ID: {assessment_id}")
+        
+        if not db:
+            logger.error("Conexão com banco de dados não disponível")
+            raise HTTPException(status_code=503, detail="Serviço de banco de dados indisponível")
+        
+        # Buscar a avaliação pelo ID
+        assessment = db.query(QuickAssessment).filter(
+            QuickAssessment.id == assessment_id
+        ).first()
+        
+        if not assessment:
+            logger.error(f"Avaliação específica não encontrada: {assessment_id}")
+            raise HTTPException(
+                status_code=404, 
+                detail=f'Avaliação específica não encontrada: "{assessment_id}"'
+            )
+        
+        logger.info(f"Avaliação encontrada: {assessment_id}")
+        
+        try:
+            # Converter dados JSON armazenados
+            strengths = assessment.strengths if isinstance(assessment.strengths, list) else json.loads(assessment.strengths) if assessment.strengths else []
+            weaknesses = assessment.weaknesses if isinstance(assessment.weaknesses, list) else json.loads(assessment.weaknesses) if assessment.weaknesses else []
+            recommendations = assessment.recommendations if isinstance(assessment.recommendations, list) else json.loads(assessment.recommendations) if assessment.recommendations else []
+            detailed_recommendations = assessment.detailed_recommendations if isinstance(assessment.detailed_recommendations, list) else json.loads(assessment.detailed_recommendations) if assessment.detailed_recommendations else None
+            next_steps = assessment.next_steps if isinstance(assessment.next_steps, list) else json.loads(assessment.next_steps) if assessment.next_steps else None
+            
+            # Processar avaliação de EB2 se existir
+            eb2_route_data = None
+            if assessment.eb2_route_evaluation:
+                try:
+                    eb2_data = assessment.eb2_route_evaluation if isinstance(assessment.eb2_route_evaluation, dict) else json.loads(assessment.eb2_route_evaluation)
+                    eb2_route_data = EB2RouteEvaluation(
+                        recommended_route=eb2_data.get("recommended_route", "ADVANCED_DEGREE"),
+                        advanced_degree_score=eb2_data.get("advanced_degree_score", 0.0),
+                        exceptional_ability_score=eb2_data.get("exceptional_ability_score", 0.0),
+                        route_explanation=eb2_data.get("route_explanation", "")
+                    )
+                except Exception as e:
+                    logger.warning(f"Erro ao processar dados EB2: {e}")
+            
+            # Processar avaliação NIW se existir
+            niw_evaluation_data = None
+            if assessment.niw_evaluation:
+                try:
+                    niw_data = assessment.niw_evaluation if isinstance(assessment.niw_evaluation, dict) else json.loads(assessment.niw_evaluation)
+                    niw_evaluation_data = NIWEvaluation(
+                        merit_importance_score=niw_data.get("merit_importance_score", 0.0),
+                        well_positioned_score=niw_data.get("well_positioned_score", 0.0),
+                        benefit_waiver_score=niw_data.get("benefit_waiver_score", 0.0),
+                        niw_overall_score=niw_data.get("niw_overall_score", 0.0)
+                    )
+                except Exception as e:
+                    logger.warning(f"Erro ao processar dados NIW: {e}")
+        except Exception as e:
+            logger.warning(f"Erro ao processar dados JSON da avaliação: {e}")
+            strengths = []
+            weaknesses = []
+            recommendations = []
+            detailed_recommendations = None
+            next_steps = None
+            eb2_route_data = None
+            niw_evaluation_data = None
+        
+        # Criar objeto de resposta
+        result = EligibilityAssessmentOutput(
+            id=assessment.id,
+            user_id=assessment.user_id,
+            created_at=assessment.created_at,
+            score=EligibilityScore(
+                education=assessment.education_score or 0.0,
+                experience=assessment.experience_score or 0.0,
+                achievements=assessment.achievements_score or 0.0,
+                recognition=assessment.recognition_score or 0.0,
+                overall=assessment.overall_score or 0.0
+            ),
+            viability_level=assessment.viability_level or "INSUFFICIENT",
+            viability=assessment.viability_level or "Low",  # Mantendo para compatibilidade
+            probability=assessment.overall_score or 0.0,  # Usando o score como probabilidade
+            strengths=strengths,
+            weaknesses=weaknesses,
+            recommendations=recommendations,
+            detailed_recommendations=detailed_recommendations,
+            next_steps=next_steps,
+            message=assessment.message,
+            eb2_route=eb2_route_data,
+            niw_evaluation=niw_evaluation_data,
+            estimated_processing_time=assessment.estimated_processing_time or (
+                90 if assessment.overall_score and assessment.overall_score > 0.8 
+                else (120 if assessment.overall_score and assessment.overall_score > 0.65 else 180)
+            )
+        )
+        
+        return result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro ao buscar avaliação: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao buscar avaliação: {str(e)}"
+        ) 
